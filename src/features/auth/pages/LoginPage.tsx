@@ -12,9 +12,31 @@ import {
   ShoppingBag,
   Star,
 } from 'lucide-react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const loginSchema = z.object({
+  email: z.string().min(1, 'Email is required').email(),
+  password: z.string().min(1, 'Password is required'),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = (data: LoginFormValues) => {
+    console.log(data);
+  };
 
   return (
     <div className="grid min-h-screen grid-cols-1 bg-zinc-50 font-sans text-zinc-900 lg:grid-cols-2">
@@ -43,7 +65,7 @@ export function LoginPage() {
           </p>
 
           {/* Form */}
-          <form className="mt-8 space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
             <div>
               <label
                 htmlFor="email"
@@ -56,10 +78,16 @@ export function LoginPage() {
                 <input
                   id="email"
                   type="email"
+                  {...register('email')}
                   placeholder="admin@lumen.shop"
                   className="w-full rounded-lg border border-zinc-300 bg-white py-2.5 pl-10 pr-3 text-sm placeholder-zinc-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                 />
               </div>
+              {errors.email && (
+                <p className="mt-1 text-xs text-red-600">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             <div>
@@ -81,6 +109,7 @@ export function LoginPage() {
                 <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
                 <input
                   id="password"
+                  {...register('password')}
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   className="w-full rounded-lg border border-zinc-300 bg-white py-2.5 pl-10 pr-10 text-sm placeholder-zinc-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
@@ -97,6 +126,11 @@ export function LoginPage() {
                   )}
                 </button>
               </div>
+              {errors.password && (
+                <p className="mt-1 text-xs text-red-600">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <label className="flex items-center gap-2 text-sm text-zinc-700">
