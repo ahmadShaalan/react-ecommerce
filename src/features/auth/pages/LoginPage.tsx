@@ -23,7 +23,7 @@ const loginSchema = z.object({
     .string()
     .min(8, 'Password must be at least 8 characters')
     .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&^#()_\-+=\[\]{};:'",.<>\\/|`~]).+$/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).*$/,
       'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
     ),
 });
