@@ -15,9 +15,11 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginFormValues } from '../types';
+import { useSignInWithEmail } from '../api/authApi';
 
 export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const { mutate: loginWithEmail } = useSignInWithEmail();
 
   const {
     register,
@@ -28,7 +30,10 @@ export function LoginPage() {
   });
 
   const onSubmit = (data: LoginFormValues) => {
-    console.log(data);
+    loginWithEmail({
+      email: data.email,
+      password: data.password,
+    });
   };
 
   return (

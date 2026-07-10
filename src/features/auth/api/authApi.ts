@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import { supabase } from '../../../lib/supabase';
 import type { LoginFormValues } from '../types';
 
@@ -12,4 +13,10 @@ export const signInWithEmail = async ({ email, password }: LoginFormValues) => {
   }
 
   return data;
+};
+
+export const useSignInWithEmail = () => {
+  return useMutation({
+    mutationFn: signInWithEmail,
+  });
 };
