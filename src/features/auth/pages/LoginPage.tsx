@@ -17,8 +17,15 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const loginSchema = z.object({
-  email: z.string().min(1, 'Email is required').email(),
-  password: z.string().min(1, 'Password is required'),
+  email: z.string().min(1, 'Email is required').email('Invalid email address'),
+
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&^#()_\-+=\[\]{};:'",.<>\\/|`~]).+$/,
+      'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
+    ),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -143,7 +150,7 @@ export function LoginPage() {
 
             <button
               type="submit"
-              className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-zinc-800"
+              className="mt-2 cursor-pointer inline-flex w-full items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-zinc-800"
             >
               Sign in
               <ArrowRight className="h-4 w-4" />
