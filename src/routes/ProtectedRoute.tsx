@@ -18,6 +18,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       </div>
     );
   }
+
   if (!session) {
     return <Navigate to="/login" replace />;
   }

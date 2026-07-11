@@ -1,7 +1,9 @@
+import { useLogout } from '../../auth/api/authApi';
 import { useAuthStore } from '../../auth/store/authStore';
 
 export function OverviewPage() {
   const session = useAuthStore((state) => state.session);
+  const { mutate: logout } = useLogout();
 
   return (
     <div className="grid min-h-screen place-items-center bg-zinc-50 font-sans text-zinc-900">
@@ -10,6 +12,12 @@ export function OverviewPage() {
         <p className="mt-1 text-sm text-zinc-500">
           Logged in as: {session?.user.email ?? 'nobody'}
         </p>
+        <button
+          onClick={() => logout()}
+          className="mt-4 rounded-lg bg-zinc-900 cursor-pointer px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
+        >
+          Log out
+        </button>
       </div>
     </div>
   );
