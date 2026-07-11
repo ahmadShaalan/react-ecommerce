@@ -1,5 +1,7 @@
 import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
 import type { Session } from '@supabase/supabase-js';
+
 import { supabase } from '../../../lib/supabase';
 
 interface AuthState {
@@ -11,12 +13,19 @@ interface AuthAction {
   setSession: (session: Session | null) => void;
 }
 
-export const useAuthStore = create<AuthState & AuthAction>((set) => ({
-  loading: true,
-  session: null,
+export const useAuthStore = create<AuthState & AuthAction>()(
+  devtools(
+    (set) => ({
+      loading: true,
+      session: null,
 
-  setSession: (session) => set({ session }),
-}));
+      setSession: (session) => set({ session }, false, 'auth/setSession'),
+    }),
+    {
+      name: 'auth-store',
+    },
+  ),
+);
 
 export async function initAuth() {
   try {
