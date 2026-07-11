@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Zap,
   Mail,
@@ -19,7 +19,13 @@ import { useSignInWithEmail } from '../api/authApi';
 
 export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const { mutate: loginWithEmail } = useSignInWithEmail();
+  const {
+    mutateAsync: loginWithEmail,
+    isPending,
+    isError,
+  } = useSignInWithEmail();
+
+  const navigate = useNavigate();
 
   const {
     register,
@@ -29,11 +35,13 @@ export function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginFormValues) => {
-    loginWithEmail({
+  const onSubmit = async (data: LoginFormValues) => {
+    await loginWithEmail({
       email: data.email,
       password: data.password,
     });
+
+    navigate('/dashboard');
   };
 
   return (
@@ -129,6 +137,12 @@ export function LoginPage() {
                   {errors.password.message}
                 </p>
               )}
+
+              {isError && (
+                <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+                  Invalid email or password. Please try again.
+                </p>
+              )}
             </div>
 
             <label className="flex items-center gap-2 text-sm text-zinc-700">
@@ -141,9 +155,10 @@ export function LoginPage() {
 
             <button
               type="submit"
-              className="mt-2 cursor-pointer inline-flex w-full items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-zinc-800"
+              disabled={isPending}
+              className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-zinc-800 disabled:opacity-60"
             >
-              Sign in
+              {isPending ? 'Signing in…' : 'Sign in'}
               <ArrowRight className="h-4 w-4" />
             </button>
           </form>
