@@ -4,13 +4,7 @@ import type { Session } from '@supabase/supabase-js';
 
 import { supabase } from '../../../lib/supabase';
 import { getUserInfo } from '../api/authApi';
-
-interface UserInfo {
-  id: string;
-  full_name: string;
-  avatar_url: string | null;
-  role: 'admin' | 'customer';
-}
+import type { UserInfo } from '../types';
 
 interface AuthState {
   session: Session | null;

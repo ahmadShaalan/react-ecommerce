@@ -12,3 +12,13 @@ export const loginSchema = z.object({
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
+
+export interface UserInfo {
+  id: string;
+  full_name: string;
+  avatar_url: string | null;
+  role: 'admin' | 'customer';
+  phone: string | null;
+  created_at: string;
+  updated_at: string;
+}
