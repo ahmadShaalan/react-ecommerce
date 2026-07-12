@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '../../../lib/supabase';
 import type { LoginFormValues } from '../types';
+import { httpClient } from '../../../lib/httpClient';
 
 export const signInWithEmail = async ({ email, password }: LoginFormValues) => {
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -33,4 +34,14 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: logout,
   });
+};
+
+export const getUserInfo = async (userId: string) => {
+  const { data } = await httpClient.get('/profiles', {
+    params: {
+      id: `eq.${userId}`,
+    },
+  });
+
+  return data;
 };
