@@ -1,10 +1,12 @@
+export type ProductStatus = 'draft' | 'published' | 'archived';
+
 export interface Product {
   id: string;
   name: string;
   slug: string;
   price: number;
   stock: number;
-  status: string;
+  status: ProductStatus;
   category: string;
   image_url: string;
 }
