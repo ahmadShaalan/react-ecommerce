@@ -1,8 +1,8 @@
-import { useSearchParams } from 'react-router-dom';
 import { DataTable, type Column } from '../../../components/DataTable';
 import { Pagination } from '../../../components/Pagination';
 import { useGetProducts } from '../api/getProducts';
 import type { Product, ProductStatus } from '../types';
+import { useState } from 'react';
 
 const STATUS_BADGE: Record<ProductStatus, string> = {
   published: 'bg-emerald-100 text-emerald-700',
@@ -17,9 +17,14 @@ function stockBadge(stock: number) {
 }
 
 const ProductsList = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const page = Number(searchParams.get('page') ?? '1');
-  const { data: products } = useGetProducts(page);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState('');
+
+  const { data: products } = useGetProducts({
+    p_page: currentPage,
+    p_page_size: 10,
+    p_search: search,
+  });
 
   const columns: Column<Product>[] = [
     {
@@ -77,15 +82,35 @@ const ProductsList = () => {
     },
   ];
 
-  const goToPage = (next: number) => {
-    setSearchParams((prev) => {
-      prev.set('page', String(next));
-      return prev;
-    });
-  };
-
   return (
     <div>
+      <div className="mb-5 flex items-center justify-between">
+        <div className="relative w-full max-w-sm">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+
+          <input
+            type="text"
+            onChange={(e) => {
+              setCurrentPage(1);
+              setSearch(e.target.value);
+            }}
+            value={search}
+            placeholder="Search products..."
+            className="w-full rounded-lg border border-zinc-300 bg-white py-2.5 pr-4 pl-10 text-sm text-zinc-900 shadow-sm outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-200"
+          />
+        </div>
+      </div>
+
       <DataTable
         columns={columns}
         data={products?.items ?? []}
@@ -95,7 +120,7 @@ const ProductsList = () => {
         page={products?.meta.currentPage || 1}
         pageSize={products?.meta.pageSize || 10}
         total={products?.meta.totalCount || 0}
-        onPageChange={goToPage}
+        onPageChange={setCurrentPage}
       />
     </div>
   );
