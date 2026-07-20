@@ -1,4 +1,6 @@
+import { useSearchParams } from 'react-router-dom';
 import { DataTable, type Column } from '../../../components/DataTable';
+import { Pagination } from '../../../components/Pagination';
 import { useGetProducts } from '../api/getProducts';
 import type { Product, ProductStatus } from '../types';
 
@@ -15,7 +17,9 @@ function stockBadge(stock: number) {
 }
 
 const ProductsList = () => {
-  const { data: products } = useGetProducts();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = Number(searchParams.get('page') ?? '1');
+  const { data: products } = useGetProducts(page);
 
   const columns: Column<Product>[] = [
     {
@@ -73,12 +77,25 @@ const ProductsList = () => {
     },
   ];
 
+  const goToPage = (next: number) => {
+    setSearchParams((prev) => {
+      prev.set('page', String(next));
+      return prev;
+    });
+  };
+
   return (
     <div>
       <DataTable
         columns={columns}
         data={products?.items ?? []}
         rowKey={(p) => p.id}
+      />
+      <Pagination
+        page={products?.meta.currentPage || 1}
+        pageSize={products?.meta.pageSize || 10}
+        total={products?.meta.totalCount || 0}
+        onPageChange={goToPage}
       />
     </div>
   );
