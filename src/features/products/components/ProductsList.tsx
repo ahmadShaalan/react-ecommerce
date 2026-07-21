@@ -183,11 +183,12 @@ const ProductsList = () => {
           <button
             type="button"
             onClick={() => {
+              setCurrentPage(1);
               setSearch('');
               setStatus('');
               setCategory('');
             }}
-            className="cursor-pointer rounded-lg border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-100 hover:border-red-400 disabled:cursor-not-allowed disabled:opacity-50 md:ml-auto"
+            className="cursor-pointer rounded-lg border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:border-red-400 hover:bg-red-100"
           >
             Clear Filters
           </button>
