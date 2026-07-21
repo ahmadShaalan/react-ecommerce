@@ -5,6 +5,7 @@ import { OverviewPage } from '../features/overview/pages/OverviewPage';
 import ProtectedRoute from './ProtectedRoute';
 import { AppLayout } from '../layouts/AppLayout';
 import ProductsPage from '../features/products/pages/ProductsPage';
+import AddProductPage from '../features/products/pages/AddProductPage';
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +34,14 @@ export const router = createBrowserRouter([
         handle: {
           title: 'Products',
           subtitle: 'Manage your catalog',
+        },
+      },
+      {
+        path: '/products/new',
+        element: <AddProductPage />,
+        handle: {
+          title: 'Add Products',
+          subtitle: 'Add new Product',
         },
       },
     ],
