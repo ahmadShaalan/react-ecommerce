@@ -1,28 +1,17 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useGetCategories } from '../../categories/api/getCategories';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { productSchema, type ProductFormValues } from '../types';
+import { useAddProduct } from '../api/addProduct';
 
 const field =
   'w-full rounded-xl border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 shadow-sm outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-200';
 
-const productSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  slug: z
-    .string()
-    .min(1, 'Slug is required')
-    .regex(/^[a-z0-9-]+$/, 'Lowercase letters, numbers, and dashes only'),
-  description: z.string(),
-  status: z.enum(['draft', 'published', 'archived']),
-  category: z.string(),
-  base_price: z.number().min(0, 'Price must be 0 or more'),
-});
-
-type ProductFormValues = z.infer<typeof productSchema>;
-
 function AddProductPage() {
+  const navigate = useNavigate();
   const categories = useGetCategories();
+  const { mutate: addProduct, isPending } = useAddProduct();
 
   const {
     handleSubmit,
@@ -32,7 +21,13 @@ function AddProductPage() {
     resolver: zodResolver(productSchema),
   });
 
-  const onSubmit = () => {};
+  const onSubmit = (data: ProductFormValues) => {
+    addProduct(data, {
+      onSuccess: () => {
+        navigate('/products');
+      },
+    });
+  };
 
   return (
     <form
@@ -180,7 +175,7 @@ function AddProductPage() {
                   type="number"
                   step="0.01"
                   placeholder="0.00"
-                  {...register('base_price')}
+                  {...register('base_price', { valueAsNumber: true })}
                   className={`${field} pl-7`}
                 />
               </div>
@@ -206,10 +201,10 @@ function AddProductPage() {
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || isPending}
           className="cursor-pointer rounded-xl bg-black px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-zinc-800 disabled:opacity-60"
         >
-          {isSubmitting ? 'Saving…' : 'Create'}
+          {isSubmitting || isPending ? 'Saving…' : 'Create'}
         </button>
       </div>
     </form>
