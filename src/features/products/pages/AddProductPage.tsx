@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { productSchema, type ProductFormValues } from '../types';
 import { useAddProduct } from '../api/addProduct';
+import toast from 'react-hot-toast';
 
 const field =
   'w-full rounded-xl border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 shadow-sm outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-200';
@@ -24,7 +25,11 @@ function AddProductPage() {
   const onSubmit = (data: ProductFormValues) => {
     addProduct(data, {
       onSuccess: () => {
+        toast.success('Product Created');
         navigate('/products');
+      },
+      onError: () => {
+        toast.error('something went wrong');
       },
     });
   };
