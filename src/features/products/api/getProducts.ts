@@ -6,6 +6,8 @@ interface ProductsPayload {
   p_page: number;
   p_page_size?: number;
   p_search?: string;
+  p_status: string;
+  p_category: string;
 }
 
 export const getProducts = async (
@@ -17,6 +19,8 @@ export const getProducts = async (
       p_page: payload.p_page || 1,
       p_page_size: payload.p_page_size || 10,
       p_search: payload.p_search || '',
+      p_status: payload.p_status || '',
+      p_category: payload.p_category || '',
     },
   );
 
@@ -30,6 +34,8 @@ export const useGetProducts = (payload: ProductsPayload) => {
       payload.p_page,
       payload.p_search,
       payload.p_page_size,
+      payload.p_status,
+      payload.p_category,
     ],
     queryFn: () => getProducts(payload),
     placeholderData: keepPreviousData,
