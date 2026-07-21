@@ -179,17 +179,19 @@ const ProductsList = () => {
           </svg>
         </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            setSearch('');
-            setStatus('');
-            setCategory('');
-          }}
-          className="cursor-pointer rounded-lg border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-100 hover:border-red-400 disabled:cursor-not-allowed disabled:opacity-50 md:ml-auto"
-        >
-          Clear Filters
-        </button>
+        {(status || category || search) && (
+          <button
+            type="button"
+            onClick={() => {
+              setSearch('');
+              setStatus('');
+              setCategory('');
+            }}
+            className="cursor-pointer rounded-lg border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-100 hover:border-red-400 disabled:cursor-not-allowed disabled:opacity-50 md:ml-auto"
+          >
+            Clear Filters
+          </button>
+        )}
       </div>
 
       <DataTable
