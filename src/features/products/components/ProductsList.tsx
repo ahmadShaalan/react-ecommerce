@@ -4,6 +4,7 @@ import { useGetCategories } from '../../categories/api/getCategories';
 import { useGetProducts } from '../api/getProducts';
 import type { Product, ProductStatus } from '../types';
 import { useState } from 'react';
+import { Pencil, Trash2 } from 'lucide-react';
 
 const STATUS_BADGE: Record<ProductStatus, string> = {
   published: 'bg-emerald-100 text-emerald-700',
@@ -85,6 +86,32 @@ const ProductsList = () => {
         <span className="tabular-nums font-bold text-zinc-700">
           ${p.price.toFixed(2)}
         </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: '',
+      headerClassName: 'w-20',
+      cell: () => (
+        <div className="flex items-center justify-end gap-1">
+          {/* Edit Button */}
+          <button
+            type="button"
+            className="rounded-lg p-1.5 text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 cursor-pointer"
+            title="Edit product"
+          >
+            <Pencil className="h-4 w-4" />
+          </button>
+
+          {/* Delete Button */}
+          <button
+            type="button"
+            className="rounded-lg p-1.5 text-zinc-500 transition hover:bg-red-50 hover:text-red-600 cursor-pointer"
+            title="Delete product"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
       ),
     },
   ];
