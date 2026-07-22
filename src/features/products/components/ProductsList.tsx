@@ -5,6 +5,10 @@ import { useGetProducts } from '../api/getProducts';
 import type { Product, ProductStatus } from '../types';
 import { useState } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
+import { useDeleteProduct } from '../api/deleteProduct';
+import { Modal } from '../../../components/Modal';
+import { useSearchParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const STATUS_BADGE: Record<ProductStatus, string> = {
   published: 'bg-emerald-100 text-emerald-700',
@@ -23,6 +27,8 @@ const ProductsList = () => {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
   const [category, setCategory] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { data: products } = useGetProducts({
     p_page: currentPage,
@@ -31,8 +37,29 @@ const ProductsList = () => {
     p_status: status,
     p_category: category,
   });
-
   const { data: categories } = useGetCategories();
+
+  const { mutate: deleteProduct, isPending: isDeleting } = useDeleteProduct();
+
+  const handleCloseModal = () => {
+    setIsOpen(false);
+    setSearchParams((prev) => {
+      prev.delete('deleteId');
+      return prev;
+    });
+  };
+
+  const handleDeleteConfirm = () => {
+    const deleteId = searchParams.get('deleteId');
+    if (!deleteId) return;
+
+    deleteProduct(deleteId, {
+      onSuccess: () => {
+        handleCloseModal();
+        toast.success('Product deleted successfully');
+      },
+    });
+  };
 
   const columns: Column<Product>[] = [
     {
@@ -92,7 +119,7 @@ const ProductsList = () => {
       key: 'actions',
       header: '',
       headerClassName: 'w-20',
-      cell: () => (
+      cell: (p) => (
         <div className="flex items-center justify-end gap-1">
           {/* Edit Button */}
           <button
@@ -106,6 +133,13 @@ const ProductsList = () => {
           {/* Delete Button */}
           <button
             type="button"
+            onClick={() => {
+              setSearchParams((prev) => {
+                prev.set('deleteId', String(p.id));
+                return prev;
+              });
+              setIsOpen(true);
+            }}
             className="rounded-lg p-1.5 text-zinc-500 transition hover:bg-red-50 hover:text-red-600 cursor-pointer"
             title="Delete product"
           >
@@ -233,6 +267,36 @@ const ProductsList = () => {
         total={products?.meta.totalCount || 0}
         onPageChange={setCurrentPage}
       />
+      <Modal
+        open={isOpen}
+        onClose={handleCloseModal}
+        title="Delete product"
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={handleCloseModal}
+              disabled={isDeleting}
+              className="rounded-lg px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 cursor-pointer disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleDeleteConfirm}
+              disabled={isDeleting}
+              className="rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 cursor-pointer disabled:opacity-60"
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </button>
+          </>
+        }
+      >
+        <p className="text-sm text-zinc-600">
+          Are you sure you want to delete this product? This action cannot be
+          undone.
+        </p>
+      </Modal>
     </div>
   );
 };
