@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { ProductGeneralTab } from '../components/ProductGeneralTab';
+import { ProductVariantsTab } from '../components/ProductVariantsTab';
 
 type Tab = 'general' | 'variants' | 'images';
 
@@ -65,11 +66,7 @@ export function EditProductPage() {
 
       {/* Panels (placeholders for now) */}
       {tab === 'general' && <ProductGeneralTab id={id} />}
-      {tab === 'variants' && (
-        <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-12 text-center text-sm text-zinc-500">
-          Variants editor — coming soon.
-        </div>
-      )}
+      {tab === 'variants' && <ProductVariantsTab id={id} />}
       {tab === 'images' && (
         <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-12 text-center text-sm text-zinc-500">
           Images — coming soon.
