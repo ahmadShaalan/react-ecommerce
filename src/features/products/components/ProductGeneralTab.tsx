@@ -35,14 +35,20 @@ export function ProductGeneralTab({ id }: { id?: string }) {
   });
 
   const onSubmit = async (data: ProductFormValues) => {
-    await updateProduct({
-      ...data,
-      id,
-    });
+    try {
+      await updateProduct({
+        ...data,
+        id,
+      });
 
-    navigate('/products');
+      navigate('/products');
 
-    toast.success('Product updated successfully');
+      toast.success('Product updated successfully');
+    } catch (error) {
+      console.log(error);
+
+      toast.error('Something went wrong');
+    }
   };
 
   if (isLoading) {
