@@ -38,3 +38,5 @@ export const productSchema = z.object({
 });
 
 export type ProductFormValues = z.infer<typeof productSchema>;
+
+export type SingleProduct = Omit<Product, 'image_url'>;

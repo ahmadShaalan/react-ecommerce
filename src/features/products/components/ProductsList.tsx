@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useDeleteProduct } from '../api/deleteProduct';
 import { Modal } from '../../../components/Modal';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 const STATUS_BADGE: Record<ProductStatus, string> = {
@@ -29,6 +29,7 @@ const ProductsList = () => {
   const [category, setCategory] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const { data: products } = useGetProducts({
     p_page: currentPage,
@@ -124,6 +125,7 @@ const ProductsList = () => {
           {/* Edit Button */}
           <button
             type="button"
+            onClick={() => navigate(`/products/${p.id}/edit`)}
             className="rounded-lg p-1.5 text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 cursor-pointer"
             title="Edit product"
           >

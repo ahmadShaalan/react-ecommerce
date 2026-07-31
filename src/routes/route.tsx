@@ -6,6 +6,7 @@ import ProtectedRoute from './ProtectedRoute';
 import { AppLayout } from '../layouts/AppLayout';
 import ProductsPage from '../features/products/pages/ProductsPage';
 import AddProductPage from '../features/products/pages/AddProductPage';
+import { EditProductPage } from '../features/products/pages/EditProductPage';
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +43,14 @@ export const router = createBrowserRouter([
         handle: {
           title: 'Add Products',
           subtitle: 'Add new Product',
+        },
+      },
+      {
+        path: '/products/:id/edit',
+        element: <EditProductPage />,
+        handle: {
+          title: 'Edit Products',
+          subtitle: 'Edit your Product',
         },
       },
     ],
