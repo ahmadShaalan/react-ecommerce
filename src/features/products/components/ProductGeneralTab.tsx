@@ -1,21 +1,56 @@
-import { Link } from 'react-router-dom';
-
-const CATEGORIES = [
-  'Phones',
-  'Laptops',
-  'Wearables',
-  'Audio',
-  'Accessories',
-  'Tablets',
-  'Smart home',
-];
+import { Link, useNavigate } from 'react-router-dom';
+import { useGetProductById } from '../api/getProductById';
+import { useForm } from 'react-hook-form';
+import { productSchema, type ProductFormValues } from '../types';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useGetCategories } from '../../categories/api/getCategories';
+import { useUpdateProduct } from '../api/updatePrduct';
+import toast from 'react-hot-toast';
 
 const field =
   'w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm placeholder-zinc-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20';
 
-export function ProductGeneralTab() {
+export function ProductGeneralTab({ id }: { id?: string }) {
+  const { data, isLoading } = useGetProductById({ productId: id });
+  const { data: categories, isLoading: categoryLoad } = useGetCategories();
+  const { mutateAsync: updateProduct } = useUpdateProduct();
+  const navigate = useNavigate();
+
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+  } = useForm<ProductFormValues>({
+    resolver: zodResolver(productSchema),
+    values: data
+      ? {
+          name: data.name,
+          slug: data.slug,
+          description: data.description,
+          category: data.category,
+          status: data.status,
+          base_price: data.base_price,
+        }
+      : undefined,
+  });
+
+  const onSubmit = async (data: ProductFormValues) => {
+    await updateProduct({
+      ...data,
+      id,
+    });
+
+    navigate('/products');
+
+    toast.success('Product updated successfully');
+  };
+
+  if (isLoading) {
+    return <p>loading...</p>;
+  }
+
   return (
-    <form className="grid grid-cols-12 gap-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-12 gap-6">
       {' '}
       {/* Product details */}
       <section className="col-span-12 xl:col-span-7 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
@@ -31,9 +66,13 @@ export function ProductGeneralTab() {
             </label>
             <input
               type="text"
+              {...register('name')}
               placeholder="e.g. Pixel-9 Phone"
               className={field}
             />
+            {errors.name && (
+              <p className="mt-1 text-xs text-red-600">{errors.name.message}</p>
+            )}
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium text-zinc-800">
@@ -41,12 +80,17 @@ export function ProductGeneralTab() {
             </label>
             <input
               type="text"
+              {...register('slug')}
               placeholder="auto-generated from name"
               className={field}
             />
-            <p className="mt-1 text-xs text-zinc-500">
-              Used in URLs. Lowercase letters, numbers, and dashes only.
-            </p>
+            {errors.slug ? (
+              <p className="mt-1 text-xs text-red-600">{errors.slug.message}</p>
+            ) : (
+              <p className="mt-1 text-xs text-zinc-500">
+                Used in URLs. Lowercase letters, numbers, and dashes only.
+              </p>
+            )}
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium text-zinc-800">
@@ -54,9 +98,15 @@ export function ProductGeneralTab() {
             </label>
             <textarea
               rows={4}
+              {...register('description')}
               placeholder="Describe the product..."
               className={field}
             />
+            {errors.description && (
+              <p className="mt-1 text-xs text-red-600">
+                {errors.description.message}
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -74,24 +124,39 @@ export function ProductGeneralTab() {
               <label className="mb-1.5 block text-sm font-medium text-zinc-800">
                 Category
               </label>
-              <select className={field}>
-                <option value="">— No category —</option>
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
+
+              {!categoryLoad && (
+                <select {...register('category')} className={field}>
+                  <option value="">— No category —</option>
+                  {categories?.map((c) => (
+                    <option key={c.id} value={c.name}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+
+              {errors.category && (
+                <p className="mt-1 text-xs text-red-600">
+                  {errors.category.message}
+                </p>
+              )}
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-medium text-zinc-800">
                 Status <span className="text-red-600">*</span>
               </label>
-              <select className={field}>
+              <select {...register('status')} className={field}>
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
                 <option value="archived">Archived</option>
               </select>
+
+              {errors.status && (
+                <p className="mt-1 text-xs text-red-600">
+                  {errors.status.message}
+                </p>
+              )}
             </div>
           </div>
         </section>
@@ -112,11 +177,17 @@ export function ProductGeneralTab() {
               </span>
               <input
                 type="number"
+                {...register('base_price', { valueAsNumber: true })}
                 step="0.01"
                 placeholder="0.00"
                 className={`${field} pl-7`}
               />
             </div>
+            {errors.base_price && (
+              <p className="mt-1 text-xs text-red-600">
+                {errors.base_price.message}
+              </p>
+            )}
           </div>
         </section>
       </div>
@@ -130,9 +201,10 @@ export function ProductGeneralTab() {
         </Link>
         <button
           type="submit"
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-zinc-800"
+          disabled={isSubmitting}
+          className="rounded-lg cursor-pointer bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          submit
+          {isSubmitting ? 'Submitting...' : 'submit'}
         </button>
       </div>
     </form>

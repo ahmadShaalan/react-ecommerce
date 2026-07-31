@@ -39,4 +39,15 @@ export const productSchema = z.object({
 
 export type ProductFormValues = z.infer<typeof productSchema>;
 
-export type SingleProduct = Omit<Product, 'image_url'>;
+export type EditProductFormValues = ProductFormValues & {
+  id?: string;
+};
+
+export interface SingleProductApi extends Omit<Product, 'image_url' | 'price'> {
+  base_price: number;
+  description: string;
+}
+
+export interface SingleProduct extends Omit<Product, 'image_url'> {
+  description: string;
+}

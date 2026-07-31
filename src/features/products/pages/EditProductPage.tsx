@@ -64,7 +64,7 @@ export function EditProductPage() {
       </div>
 
       {/* Panels (placeholders for now) */}
-      {tab === 'general' && <ProductGeneralTab />}
+      {tab === 'general' && <ProductGeneralTab id={id} />}
       {tab === 'variants' && (
         <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-12 text-center text-sm text-zinc-500">
           Variants editor — coming soon.

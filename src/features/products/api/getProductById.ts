@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { httpClient } from '../../../lib/httpClient';
-import type { SingleProduct } from '../types';
+import type { SingleProductApi } from '../types';
 
 export const getProductById = async ({
   productId,
 }: {
   productId?: string;
-}): Promise<SingleProduct> => {
-  const { data } = await httpClient.post<SingleProduct>('/rpc/get_product', {
+}): Promise<SingleProductApi> => {
+  const { data } = await httpClient.post<SingleProductApi>('/rpc/get_product', {
     p_id: productId,
   });
 
