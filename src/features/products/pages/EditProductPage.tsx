@@ -66,7 +66,7 @@ export function EditProductPage() {
 
       {/* Panels (placeholders for now) */}
       {tab === 'general' && <ProductGeneralTab id={id} />}
-      {tab === 'variants' && <ProductVariantsTab id={id} />}
+      {tab === 'variants' && <ProductVariantsTab id={id!} />}
       {tab === 'images' && (
         <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-12 text-center text-sm text-zinc-500">
           Images — coming soon.
