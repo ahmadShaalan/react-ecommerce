@@ -68,7 +68,7 @@ export function EditProductPage() {
       {/* Panels (placeholders for now) */}
       {tab === 'general' && <ProductGeneralTab id={id} />}
       {tab === 'variants' && <ProductVariantsTab id={id!} />}
-      {tab === 'images' && <ProductImagesTab />}
+      {tab === 'images' && <ProductImagesTab id={id!} />}
     </main>
   );
 }

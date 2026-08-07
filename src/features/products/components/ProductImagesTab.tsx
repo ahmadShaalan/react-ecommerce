@@ -1,32 +1,29 @@
 import { Upload, Star, Trash2 } from 'lucide-react';
+import { Spinner } from '../../../components/Spinner';
+import { useGetProductImages } from '../api/getProductImages';
+import type { ProductImage } from '../types/variants.types';
 
-const SAMPLE = [
-  {
-    id: '1',
-    url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&q=80',
-    is_primary: true,
-  },
-  {
-    id: '2',
-    url: 'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=400&q=80',
-    is_primary: false,
-  },
-  {
-    id: '3',
-    url: 'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=400&q=80',
-    is_primary: false,
-  },
-  {
-    id: '4',
-    url: 'https://images.unsplash.com/photo-1556656793-08538906a9f8?w=400&q=80',
-    is_primary: false,
-  },
-];
+export function ProductImagesTab({ id }: { id: string }) {
+  const images = useGetProductImages({ id });
 
-export function ProductImagesTab() {
+  if (images.isError) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        Couldn't load images.
+      </div>
+    );
+  }
+  if (images.isLoading || !images.data) {
+    return (
+      <div className="grid place-items-center py-20">
+        <Spinner className="h-8 w-8" />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl space-y-4">
-      {/* Dropzone */}
+      {/* Dropzone (wired next step) */}
       <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-zinc-300 bg-white p-8 text-sm transition-colors hover:border-zinc-400">
         <Upload className="mb-2 h-6 w-6 text-zinc-400" />
         <div className="text-zinc-700">
@@ -38,44 +35,49 @@ export function ProductImagesTab() {
         <input type="file" accept="image/*" multiple className="hidden" />
       </label>
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {SAMPLE.map((img) => (
-          <div
-            key={img.id}
-            className="group relative overflow-hidden rounded-xl border border-zinc-200 bg-white"
-          >
-            <img
-              src={img.url}
-              alt=""
-              className="aspect-square w-full object-cover"
-            />
+      {images.data.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-8 text-center text-sm text-zinc-500">
+          No images yet. Upload the first one above.
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {images.data?.map((img: ProductImage) => (
+            <div
+              key={img.id}
+              className="group relative overflow-hidden rounded-xl border border-zinc-200 bg-white"
+            >
+              <img
+                src={img.url}
+                alt=""
+                className="aspect-square w-full object-cover"
+              />
 
-            {img.is_primary && (
-              <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-amber-500 px-2 py-0.5 text-xs font-medium text-white">
-                <Star className="h-3 w-3 fill-current" /> Primary
-              </span>
-            )}
+              {img.is_primary && (
+                <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-amber-500 px-2 py-0.5 text-xs font-medium text-white">
+                  <Star className="h-3 w-3 fill-current" /> Primary
+                </span>
+              )}
 
-            <div className="absolute inset-x-0 bottom-0 flex justify-end gap-1 bg-gradient-to-t from-black/70 to-transparent p-2 opacity-0 transition-opacity group-hover:opacity-100">
-              {!img.is_primary && (
+              <div className="absolute inset-x-0 bottom-0 flex justify-end gap-1 bg-gradient-to-t from-black/70 to-transparent p-2 opacity-0 transition-opacity group-hover:opacity-100">
+                {!img.is_primary && (
+                  <button
+                    type="button"
+                    className="rounded-md p-1.5 text-white hover:bg-white/20"
+                  >
+                    <Star className="h-4 w-4" />
+                  </button>
+                )}
                 <button
                   type="button"
                   className="rounded-md p-1.5 text-white hover:bg-white/20"
                 >
-                  <Star className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4" />
                 </button>
-              )}
-              <button
-                type="button"
-                className="rounded-md p-1.5 text-white hover:bg-white/20"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
