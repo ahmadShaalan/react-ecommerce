@@ -10,3 +10,14 @@ export interface Category {
   created_at: string;
   updated_at: string;
 }
+
+export interface CategoryInfo {
+  id: number;
+  name: string;
+  slug: string;
+  parent: string | null;
+  is_active: boolean;
+  parent_id: number | null;
+  description: string;
+  product_count: number;
+}
