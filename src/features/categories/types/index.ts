@@ -15,9 +15,11 @@ export interface CategoryInfo {
   id: number;
   name: string;
   slug: string;
+  description: string;
+  parent_id: number | null;
   parent: string | null;
   is_active: boolean;
-  parent_id: number | null;
-  description: string;
+  icon: string;
+  color: string;
   product_count: number;
 }
