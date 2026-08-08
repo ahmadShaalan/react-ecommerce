@@ -5,14 +5,17 @@ import type { ProductImage } from '../types/variants.types';
 
 import toast from 'react-hot-toast';
 import { useUploadProductImages } from '../api/UplodeProductImage';
+import { useSetPrimaryImage } from '../api/setPrimaryImage';
+import { useDeleteProductImage } from '../api/deleteProductImage';
 
 const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_BYTES = 5 * 1024 * 1024;
 
 export function ProductImagesTab({ id }: { id: string }) {
   const images = useGetProductImages({ id });
-
   const upload = useUploadProductImages(id);
+  const setPrimary = useSetPrimaryImage(id);
+  const deleteImage = useDeleteProductImage(id);
 
   const handleFiles = (fileList: FileList | null) => {
     if (!fileList?.length) return;
@@ -101,12 +104,12 @@ export function ProductImagesTab({ id }: { id: string }) {
               <img
                 src={img.url}
                 alt=""
-                className="aspect-square w-full object-cover"
+                className="aspect-square cup w-full object-cover"
               />
 
               {img.is_primary && (
-                <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-amber-500 px-2 py-0.5 text-xs font-medium text-white">
-                  <Star className="h-3 w-3 fill-current" /> Primary
+                <span className="absolute left-2  top-2 inline-flex items-center gap-1 rounded-full bg-amber-500 px-2 py-0.5 text-xs font-medium text-white">
+                  <Star className="h-3 cup w-3 fill-current" /> Primary
                 </span>
               )}
 
@@ -114,14 +117,28 @@ export function ProductImagesTab({ id }: { id: string }) {
                 {!img.is_primary && (
                   <button
                     type="button"
-                    className="rounded-md p-1.5 text-white hover:bg-white/20"
+                    disabled={setPrimary.isPending}
+                    onClick={() =>
+                      setPrimary.mutate(img.id, {
+                        onSuccess: () => toast.success('Primary image set'),
+                      })
+                    }
+                    className="rounded-md p-1.5 text-white hover:bg-white/20 disabled:opacity-50"
+                    title="Make primary"
                   >
                     <Star className="h-4 w-4" />
                   </button>
                 )}
                 <button
                   type="button"
-                  className="rounded-md p-1.5 text-white hover:bg-white/20"
+                  disabled={deleteImage.isPending}
+                  onClick={() =>
+                    deleteImage.mutate(img.id, {
+                      onSuccess: () => toast.success('Image deleted'),
+                    })
+                  }
+                  className="rounded-md p-1.5 text-white hover:bg-white/20 disabled:opacity-50"
+                  title="Delete"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>

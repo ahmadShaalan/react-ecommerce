@@ -11,7 +11,7 @@ export const getProductImages = async ({ id }: { id: string }) => {
 
 export const useGetProductImages = ({ id }: { id: string }) => {
   return useQuery({
-    queryKey: ['images'],
+    queryKey: ['images', id],
     queryFn: () => getProductImages({ id }),
     enabled: !!id,
   });
