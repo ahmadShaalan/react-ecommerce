@@ -11,6 +11,10 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useGetCategoriesList } from '../api/getCategoriesList';
+import { Spinner } from '../../../components/Spinner';
+import { Modal } from '../../../components/Modal';
+import { useState } from 'react';
+import { useDeleteCategory } from '../api/deleteCategory';
 
 const ICONS: Record<string, LucideIcon> = {
   smartphone: Smartphone,
@@ -36,7 +40,41 @@ const COLORS: Record<string, string> = {
 };
 
 const CategoriesList = () => {
-  const { data: categories } = useGetCategoriesList();
+  const { data: categories, isLoading, isError } = useGetCategoriesList();
+  const { mutate: deleteCategory, isPending } = useDeleteCategory();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [deleteId, setDeleteId] = useState<string | number | null>(null);
+
+  const handleDelete = () => {
+    console.log(`id: ${deleteId}`);
+
+    if (!deleteId) return;
+
+    deleteCategory(deleteId, {
+      onSuccess: () => {
+        setDeleteId(null);
+        setIsOpen(false);
+      },
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <main className="grid place-items-center py-20">
+        <Spinner className="h-8 w-8" />
+      </main>
+    );
+  }
+
+  if (isError) {
+    return (
+      <main className="px-8 py-8">
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          Couldn't load categories.
+        </div>
+      </main>
+    );
+  }
 
   return (
     <>
@@ -91,13 +129,17 @@ const CategoriesList = () => {
               <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                 <button
                   type="button"
-                  className="rounded p-1.5 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"
+                  className="rounded p-1.5 cursor-pointer text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"
                 >
                   <Pencil className="h-4 w-4" />
                 </button>
                 <button
                   type="button"
-                  className="rounded p-1.5 text-red-600 hover:bg-red-50"
+                  onClick={() => {
+                    setIsOpen(true);
+                    setDeleteId(category.id);
+                  }}
+                  className="rounded p-1.5 cursor-pointer text-red-600 hover:bg-red-50"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -106,6 +148,41 @@ const CategoriesList = () => {
           );
         })}
       </ul>
+
+      <Modal
+        open={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+          setDeleteId(null);
+        }}
+        title="Delete category"
+        footer={
+          <div className="flex items-center justify-end gap-3">
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                setDeleteId(null);
+              }}
+              className="rounded-lg px-4 py-2 cursor-pointer text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 active:bg-gray-100 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            >
+              Cancel
+            </button>
+
+            <button
+              onClick={handleDelete}
+              disabled={isPending}
+              className="rounded-lg px-4 py-2 text-sm font-medium text-white bg-red-600 shadow-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 hover:bg-red-700 active:bg-red-800 cursor-pointer       disabled:bg-red-300 disabled:text-white/80 disabled:cursor-not-allowed disabled:shadow-none"
+            >
+              Delete
+            </button>
+          </div>
+        }
+      >
+        <p className="text-gray-600 text-sm">
+          Are you sure you want to delete this category? This action cannot be
+          undone.
+        </p>
+      </Modal>
     </>
   );
 };

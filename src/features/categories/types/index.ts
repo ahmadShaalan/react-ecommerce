@@ -12,7 +12,7 @@ export interface Category {
 }
 
 export interface CategoryInfo {
-  id: number;
+  id: number | string;
   name: string;
   slug: string;
   description: string;
