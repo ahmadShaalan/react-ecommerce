@@ -1,3 +1,5 @@
+import { useSearchParams } from 'react-router-dom';
+
 import {
   Cpu,
   Folder,
@@ -39,7 +41,12 @@ const COLORS: Record<string, string> = {
   zinc: 'bg-zinc-100 text-zinc-600',
 };
 
-const CategoriesList = () => {
+interface CategoryListProps {
+  showEditCategoryFormHandler: () => void;
+}
+
+const CategoriesList = ({ showEditCategoryFormHandler }: CategoryListProps) => {
+  const [, setSearchParams] = useSearchParams();
   const { data: categories, isLoading, isError } = useGetCategoriesList();
   const { mutate: deleteCategory, isPending } = useDeleteCategory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -129,6 +136,10 @@ const CategoriesList = () => {
               <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                 <button
                   type="button"
+                  onClick={() => {
+                    setSearchParams({ edit: String(category.id) });
+                    showEditCategoryFormHandler();
+                  }}
                   className="rounded p-1.5 cursor-pointer text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"
                 >
                   <Pencil className="h-4 w-4" />
