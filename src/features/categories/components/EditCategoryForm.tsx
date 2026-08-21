@@ -3,6 +3,8 @@ import type { EditCategoryFormValue } from '../types';
 import { useGetCategoryById } from '../api/getCategoryById';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect } from 'react';
+import { useEditCategory } from '../api/editCategory';
+import { Loader2 } from 'lucide-react';
 
 const field =
   'w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20';
@@ -11,6 +13,7 @@ const EditCategoryForm = () => {
   const [searchParams] = useSearchParams();
   const categoryId = searchParams.get('edit');
   const { data: category, isLoading } = useGetCategoryById(categoryId!);
+  const { mutate: editCategory, isPending } = useEditCategory();
 
   const {
     register,
@@ -33,7 +36,15 @@ const EditCategoryForm = () => {
     }
   }, [category, reset]);
 
-  const onSubmit = () => {};
+  const onSubmit = (data: EditCategoryFormValue) => {
+    editCategory({
+      id: categoryId || null || undefined,
+      categories: {
+        is_active: data.is_active,
+        name: data.name,
+      },
+    });
+  };
 
   if (isLoading) {
     return (
@@ -109,9 +120,11 @@ const EditCategoryForm = () => {
         </button>
         <button
           type="submit"
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
+          disabled={isPending}
+          className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-400"
         >
-          Save
+          {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+          {isPending ? 'Saving...' : 'Save'}
         </button>
       </div>
     </form>

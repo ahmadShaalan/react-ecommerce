@@ -11,8 +11,8 @@ export interface Category {
   is_active: boolean;
   created_at: string;
   updated_at: string;
-  icon: string;
-  color: string;
+  icon?: string;
+  color?: string;
 }
 
 export interface CategoryInfo {
