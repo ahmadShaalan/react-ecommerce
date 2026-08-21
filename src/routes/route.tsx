@@ -8,6 +8,7 @@ import ProductsPage from '../features/products/pages/ProductsPage';
 import AddProductPage from '../features/products/pages/AddProductPage';
 import { EditProductPage } from '../features/products/pages/EditProductPage';
 import { CategoriesPage } from '../features/categories/pages/CategoriesPage';
+import OrdersPage from '../features/orders/pages/OrdersPage';
 
 export const router = createBrowserRouter([
   {
@@ -64,6 +65,17 @@ export const router = createBrowserRouter([
         handle: {
           title: 'Categories',
           subtitle: 'Organize products into shoppable groups',
+        },
+      },
+
+      // Orders Routes
+
+      {
+        path: '/orders',
+        element: <OrdersPage />,
+        handle: {
+          title: 'Orders',
+          subtitle: 'Manage your orders',
         },
       },
     ],
