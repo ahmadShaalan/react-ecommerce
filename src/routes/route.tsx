@@ -75,7 +75,7 @@ export const router = createBrowserRouter([
         element: <OrdersPage />,
         handle: {
           title: 'Orders',
-          subtitle: 'Manage your orders',
+          subtitle: 'Orders List',
         },
       },
     ],
